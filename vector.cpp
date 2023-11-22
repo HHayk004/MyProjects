@@ -1,4 +1,5 @@
 #include <iostream>
+#include <initializer_list>
 #include <limits>
 
 template <typename T>
@@ -12,11 +13,14 @@ class MyVector
         
     public:
 		MyVector();
+		MyVector(T);
+		MyVector(std::initializer_list<T>);
+		MyVector(const MyVector&) noexcept;
         ~MyVector();
     
         T* data();
 
-        T& operator[](const size_t);
+        T& operator[](const size_t) const;
         T at(size_t);
     
         T& back();
@@ -32,16 +36,16 @@ class MyVector
         
         void swap(MyVector&);
 
-        size_t size();
+        size_t size() const;
         const size_t max_size();
-        size_t capacity();
+        size_t capacity() const;
 
         void clear();
 };
 
 int main()
 {
-    MyVector<int> vec;
+    MyVector<int> vec = {-5, -4};
     int n = 0;
     
     do {
@@ -59,27 +63,8 @@ int main()
         vec.push_back(tmp);
     }
 
-    MyVector<int> vec1;
-    int n1 = 0;
-    
-    do {
-        std::cout << "Enter the vec1 size: ";
-        std::cin >> n1;
-    } while (n1 < 1);
+    MyVector<int> vec1(vec);
 
-    for (int i = 0; i < n1; ++i)
-    {
-        int tmp = 0;
-
-        std::cout << "Vec1[" << i << "] = ";
-        std::cin >> tmp;
-
-        vec1.push_back(tmp);
-    }  
-
-    vec.swap(vec1);
-
-    std::cout << vec.size() << ' ' << vec.capacity() << std::endl;
     for (int i = 0; i < vec.size(); ++i)
     {
         std::cout << vec[i] << ' ';
@@ -105,10 +90,48 @@ MyVector<T>::MyVector()
 }
 
 template <typename T>
+MyVector<T>::MyVector(T obj)
+{
+	m_capacity = 10;
+	m_ptr = new T [m_capacity]{0};
+
+	m_ptr[0] = obj;
+	m_size = 1;
+}
+
+template <typename T>
+MyVector<T>::MyVector(std::initializer_list<T> list)
+{
+	m_size = list.size();
+	m_capacity = m_size + 10;
+	m_ptr = new T [m_capacity];
+
+	int index = 0;
+	for (const auto& elem : list)
+	{
+		m_ptr[index] = elem;
+		++index;
+	}
+}
+
+template <typename T>
 MyVector<T>::~MyVector()
 {
     delete[] m_ptr;
     m_ptr = nullptr;
+}
+
+template <typename T>
+MyVector<T>::MyVector(const MyVector& other) noexcept
+{
+	m_size = other.size();
+	m_capacity = other.capacity();
+
+	m_ptr = new T [m_size]; 
+	for (int i = 0; i < m_size; ++i)
+	{
+		m_ptr[i] = other[i];
+	}
 }
 
 template <typename T>
@@ -207,7 +230,7 @@ void MyVector<T>::shrink_to_fit()
 }
 
 template <typename T>
-T& MyVector<T>::operator[](const size_t index)
+T& MyVector<T>::operator[](const size_t index) const
 {
     return m_ptr[index];
 }
@@ -225,13 +248,13 @@ T MyVector<T>::at(size_t index)
 }
 
 template <typename T>
-size_t MyVector<T>::size()
+size_t MyVector<T>::size() const
 {
     return m_size;
 }
 
 template <typename T>
-size_t MyVector<T>::capacity()
+size_t MyVector<T>::capacity() const
 {
     return m_capacity;
 }
