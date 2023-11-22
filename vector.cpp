@@ -5,12 +5,13 @@ template <typename T>
 class MyVector 
 {
     private:
-        T* m_ptr = nullptr;
-        size_t m_size = 0;
-        const size_t m_max_size = std::numeric_limits<size_t>::max() / sizeof(T);
-        size_t m_capacity = 0;
+        T* m_ptr;
+        size_t m_size;
+		const size_t m_max_size = std::numeric_limits<size_t>::max() / sizeof(T);
+        size_t m_capacity;
         
     public:
+		MyVector();
         ~MyVector();
     
         T* data();
@@ -93,6 +94,14 @@ int main()
     std::cout << std::endl;
 
     return 0;
+}
+
+template <typename T>
+MyVector<T>::MyVector()
+{
+	m_ptr = nullptr;
+	m_size = 0;
+	m_capacity = 0;
 }
 
 template <typename T>
