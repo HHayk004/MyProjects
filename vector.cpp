@@ -16,20 +16,21 @@ class MyVector
 		MyVector(T);
 		MyVector(std::initializer_list<T>);
 		MyVector(const MyVector&) noexcept;
-        ~MyVector();
+        MyVector(MyVector&&);
+		~MyVector();
     
-        T* data();
+        T* data() const;
 
         T& operator[](const size_t) const;
-        T at(size_t);
+        T at(size_t) const;
     
-        T& back();
-        T& front();
+        T& back() const;
+        T& front() const;
 
         void shrink_to_fit();
         
         void resize(size_t);
-        bool empty();        
+        bool empty() const;        
         
         void push_back(T);
         void pop_back();
@@ -37,7 +38,7 @@ class MyVector
         void swap(MyVector&);
 
         size_t size() const;
-        const size_t max_size();
+        const size_t max_size() const;
         size_t capacity() const;
 
         void clear();
@@ -63,7 +64,7 @@ int main()
         vec.push_back(tmp);
     }
 
-    MyVector<int> vec1(vec);
+    MyVector<int> vec1(std::move(vec));
 
     for (int i = 0; i < vec.size(); ++i)
     {
@@ -115,17 +116,10 @@ MyVector<T>::MyVector(std::initializer_list<T> list)
 }
 
 template <typename T>
-MyVector<T>::~MyVector()
-{
-    delete[] m_ptr;
-    m_ptr = nullptr;
-}
-
-template <typename T>
 MyVector<T>::MyVector(const MyVector& other) noexcept
 {
-	m_size = other.size();
-	m_capacity = other.capacity();
+	m_size = other.m_size;
+	m_capacity = other.m_capacity;
 
 	m_ptr = new T [m_size]; 
 	for (int i = 0; i < m_size; ++i)
@@ -135,7 +129,26 @@ MyVector<T>::MyVector(const MyVector& other) noexcept
 }
 
 template <typename T>
-T* MyVector<T>::data()
+MyVector<T>::MyVector(MyVector&& other)
+{
+	m_size = other.m_size;
+	m_capacity = other.m_capacity;
+	m_ptr = other.m_ptr;
+
+	other.m_size = 0;
+	other.m_capacity = 0;
+	other.m_ptr = nullptr;
+}
+
+template <typename T>
+MyVector<T>::~MyVector()
+{
+    delete[] m_ptr;
+    m_ptr = nullptr;
+}
+
+template <typename T>
+T* MyVector<T>::data() const
 {
     return m_ptr;
 }
@@ -171,7 +184,7 @@ void MyVector<T>::pop_back()
 
 template <typename T>
 
-bool MyVector<T>::empty()
+bool MyVector<T>::empty() const
 {
     return m_size == 0;
 }
@@ -236,7 +249,7 @@ T& MyVector<T>::operator[](const size_t index) const
 }
 
 template <typename T>
-T MyVector<T>::at(size_t index)
+T MyVector<T>::at(size_t index) const
 {
     if (index >= m_size)
     {
@@ -260,19 +273,19 @@ size_t MyVector<T>::capacity() const
 }
 
 template <typename T>
-const size_t MyVector<T>::max_size()
+const size_t MyVector<T>::max_size() const
 {
     return m_max_size;
 }
 
 template <typename T>
-T& MyVector<T>::front()
+T& MyVector<T>::front() const
 {
     return m_ptr[0];
 }
 
 template <typename T>
-T& MyVector<T>::back()
+T& MyVector<T>::back() const
 {    
     return m_ptr[m_size - 1];
 }
