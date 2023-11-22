@@ -25,6 +25,8 @@ class MyVector
         MyVector& operator=(const MyVector&);
         MyVector& operator=(MyVector&&);
 
+        std::ostream& operator<<(std::ostream&) const;
+
         T* data() const;
         T at(size_t) const;
     
@@ -48,6 +50,13 @@ class MyVector
         void clear();
 };
 
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const MyVector<T>& other)
+{
+    return other.operator<<(os);
+}
+
 int main()
 {
     MyVector<int> vec({-5, -4});
@@ -56,17 +65,9 @@ int main()
     vec1 = vec;
 
     vec = vec;
-    for (int i = 0; i < vec.size(); ++i)
-    {
-        std::cout << vec[i] << ' ';
-    }
-    std::cout << std::endl;
-
-    for (int i = 0; i < vec1.size(); ++i)
-    {
-        std::cout << vec1[i] << ' ';
-    }
-    std::cout << std::endl;
+    std::cout << vec << std::endl;
+    
+    std::cout << vec1 << std::endl;
 
     return 0;
 }
@@ -252,7 +253,7 @@ MyVector<T>& MyVector<T>::operator=(std::initializer_list<T> list)
     {
         m_ptr[index] = elem;
     }
-//00110001 01011010
+
     return *this;
 }
 
@@ -291,6 +292,17 @@ MyVector<T>& MyVector<T>::operator=(MyVector&& other)
 
     return *this;
 }
+
+template <typename T>
+std::ostream& MyVector<T>::operator<<(std::ostream& os) const
+{
+    for (int i = 0; i < m_size; ++i)
+    {
+        std::cout << m_ptr[i] << ' ';
+    }
+    return os;
+}
+
 
 template <typename T>
 T MyVector<T>::at(size_t index) const
