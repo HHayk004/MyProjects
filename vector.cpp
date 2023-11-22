@@ -18,10 +18,14 @@ class MyVector
 		MyVector(const MyVector&) noexcept;
         MyVector(MyVector&&);
 		~MyVector();
-    
-        T* data() const;
 
         T& operator[](const size_t) const;
+
+        MyVector& operator=(std::initializer_list<T>);
+        MyVector& operator=(const MyVector&);
+        MyVector& operator=(MyVector&&);
+
+        T* data() const;
         T at(size_t) const;
     
         T& back() const;
@@ -46,33 +50,18 @@ class MyVector
 
 int main()
 {
-    MyVector<int> vec = {-5, -4};
-    int n = 0;
-    
-    do {
-        std::cout << "Enter the vec size: ";
-        std::cin >> n;
-    } while (n < 1);
+    MyVector<int> vec({-5, -4});
 
-    for (int i = 0; i < n; ++i)
-    {
-        int tmp = 0;
+    MyVector<int> vec1;
+    vec1 = vec;
 
-        std::cout << "Vec[" << i << "] = ";
-        std::cin >> tmp;
-
-        vec.push_back(tmp);
-    }
-
-    MyVector<int> vec1(std::move(vec));
-
+    vec = vec;
     for (int i = 0; i < vec.size(); ++i)
     {
         std::cout << vec[i] << ' ';
     }
     std::cout << std::endl;
 
-    std::cout << vec1.size() << ' ' << vec1.capacity() << std::endl;
     for (int i = 0; i < vec1.size(); ++i)
     {
         std::cout << vec1[i] << ' ';
@@ -246,6 +235,61 @@ template <typename T>
 T& MyVector<T>::operator[](const size_t index) const
 {
     return m_ptr[index];
+}
+
+template <typename T>
+MyVector<T>& MyVector<T>::operator=(std::initializer_list<T> list)
+{   
+    m_size = list.size();
+    
+    if (m_size > m_capacity)
+    {
+        resize(m_size);
+    }    
+
+    int index = 0;
+    for (const auto& elem: list)
+    {
+        m_ptr[index] = elem;
+    }
+//00110001 01011010
+    return *this;
+}
+
+template <typename T>
+MyVector<T>& MyVector<T>::operator=(const MyVector& other)
+{
+    if (this != &other)
+    {
+        m_size = other.m_size;
+        m_capacity = other.m_capacity;
+
+        delete[] m_ptr;
+        m_ptr = new T [m_capacity];
+    
+        for (int i = 0; i < m_size; ++i)
+        {
+            m_ptr[i] = other[i];
+        }
+    }
+
+    return *this;
+}
+
+template <typename T>
+MyVector<T>& MyVector<T>::operator=(MyVector&& other)
+{
+    m_size = other.m_size;
+    m_capacity = other.m_capacity;
+
+    delete[] m_ptr;
+    m_ptr = new T [m_capacity];
+
+    other.m_size = 0;
+    other.m_capacity = 0;
+    other.m_ptr = nullptr;
+
+    return *this;
 }
 
 template <typename T>
