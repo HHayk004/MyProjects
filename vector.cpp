@@ -50,7 +50,6 @@ class MyVector
         void clear();
 };
 
-
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const MyVector<T>& other)
 {
