@@ -1,3 +1,5 @@
+#define BYTE (sizeof(uint8_t) * 8)
+
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const MyVector<T>& other)
 {
@@ -27,7 +29,7 @@ MyVector<T>::MyVector(std::initializer_list<T> list)
 {
 	m_size = list.size();
 	m_capacity = m_size + 10;
-	m_ptr = new T [m_capacity];
+	m_ptr = new T [m_capacity]{0};
 
 	int index = 0;
 	for (const auto& elem : list)
@@ -43,7 +45,7 @@ MyVector<T>::MyVector(const MyVector& other) noexcept
 	m_size = other.m_size;
 	m_capacity = other.m_capacity;
 
-	m_ptr = new T [m_size]; 
+	m_ptr = new T [m_size]{0}; 
 	for (int i = 0; i < m_size; ++i)
 	{
 		m_ptr[i] = other[i];
@@ -105,7 +107,6 @@ void MyVector<T>::pop_back()
 }
 
 template <typename T>
-
 bool MyVector<T>::empty() const
 {
     return m_size == 0;
@@ -235,7 +236,6 @@ std::ostream& MyVector<T>::operator<<(std::ostream& os) const
     return os;
 }
 
-
 template <typename T>
 T MyVector<T>::at(size_t index) const
 {
@@ -296,3 +296,134 @@ void MyVector<T>::clear()
     m_size = 0;
 }
 
+std::ostream& operator<<(std::ostream& os, const MyVector<uint8_t>& other)
+{
+    return other.operator<<(os);
+}
+
+std::ostream& MyVector<uint8_t>::operator<<(std::ostream& os) const
+{
+    std::cout << m_ptr[0] << std::endl;
+    for (int i = 0; i < m_size; ++i)
+    {
+        std::cout << ((m_ptr[i / BYTE] >> (i % BYTE)) & 1) << ' ';
+    }
+    return os;
+}
+
+MyVector<uint8_t>::MyVector()
+{
+	m_ptr = nullptr;
+	m_size = 0;
+	m_capacity = 0;
+}
+
+MyVector<uint8_t>::MyVector(bool obj)
+{
+	m_capacity = 1;
+	m_ptr = new uint8_t [m_capacity]{0};
+
+	m_ptr[0] = obj;
+	m_size = 1;
+}
+
+MyVector<uint8_t>::MyVector(std::initializer_list<bool> list)
+{
+	m_size = list.size();
+	m_capacity = m_size / BYTE + 1;
+	m_ptr = new uint8_t [m_capacity]{0};
+
+	int index = 0;
+	for (const auto& elem : list)
+	{
+        std::cout << elem << ' ';
+		m_ptr[index / BYTE] |= elem << (index % BYTE);
+        std::cout << m_ptr[index / BYTE] << ' ' << (elem << (index % BYTE)) << std::endl;
+        ++index;
+	}
+}
+
+MyVector<uint8_t>::MyVector(const MyVector<uint8_t>& other) noexcept
+{
+	m_size = other.m_size;
+	m_capacity = other.m_capacity;
+
+	m_ptr = new uint8_t [m_size]; 
+	for (int i = 0; i < m_size; ++i)
+	{
+		m_ptr[i] = other.m_ptr[i];
+	}
+}
+
+MyVector<uint8_t>::MyVector(MyVector<uint8_t>&& other)
+{
+	m_size = other.m_size;
+	m_capacity = other.m_capacity;
+	m_ptr = other.m_ptr;
+
+	other.m_size = 0;
+	other.m_capacity = 0;
+	other.m_ptr = nullptr;
+}
+
+MyVector<uint8_t>::~MyVector()
+{
+    delete[] m_ptr;
+    m_ptr = nullptr;
+}
+
+uint8_t* MyVector<uint8_t>::data() const
+{
+    return m_ptr;
+}
+
+void MyVector<uint8_t>::resize(size_t new_size)
+{
+    if (new_size > m_max_size)
+    {
+        std::cerr << "new_size > m_max_size in resize:\n";
+        exit(-1);
+    }
+
+    if (m_ptr == nullptr)
+    {
+        m_capacity = new_size;
+        m_ptr = new uint8_t [m_capacity]{0};
+    }
+    
+    else if (new_size > m_capacity)
+    {
+        m_capacity = new_size;
+        uint8_t* new_ptr = new uint8_t [m_capacity]{0};
+        for (int i = 0; i < m_size; ++i)
+        {
+            new_ptr[i] = m_ptr[i];
+        }
+
+        delete[] m_ptr;
+        m_ptr = new_ptr;
+        new_ptr = nullptr;
+    }
+
+    else
+    {
+        m_size = new_size;
+    }
+}
+
+void MyVector<uint8_t>::push_back(bool val)
+{
+    if (m_size > m_max_size - 10)
+    {
+        std::cerr << "m_size > m_max_size - 10 in push_back:\n";
+        exit(-1);
+    }
+
+    if (m_size / BYTE == m_capacity && m_size % BYTE == 0)
+    {
+        resize(m_capacity + 2);    
+    }
+
+    m_ptr[m_size / BYTE] |= val << (m_size % 8);
+    ++m_size;
+}
