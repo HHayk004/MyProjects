@@ -78,7 +78,7 @@
     };
 
     template <>
-    class MyVector<uint8_t>
+    class MyVector<bool>
     {
         private:
             size_t m_size;
@@ -90,11 +90,12 @@
             MyVector();
 		    MyVector(bool);
 		    MyVector(std::initializer_list<bool>);
-		    MyVector(const MyVector<uint8_t>&) noexcept;
-            MyVector(MyVector<uint8_t>&&);
+		    MyVector(const MyVector<bool>&) noexcept;
+            MyVector(MyVector<bool>&&);
 		    ~MyVector();
     
             std::ostream& operator<<(std::ostream&) const;
+            bool operator[](size_t) const;            
 
             uint8_t* data() const;
             bool at(size_t) const;
@@ -102,7 +103,7 @@
             void shrink_to_fit();
         
             void resize(size_t);
-            bool empty() const;        
+            bool empty() const; 
         
             void push_back(bool);
             void pop_back();

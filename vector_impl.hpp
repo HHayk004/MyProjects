@@ -296,29 +296,44 @@ void MyVector<T>::clear()
     m_size = 0;
 }
 
-std::ostream& operator<<(std::ostream& os, const MyVector<uint8_t>& other)
+std::ostream& operator<<(std::ostream& os, const MyVector<bool>& other)
 {
     return other.operator<<(os);
 }
 
-std::ostream& MyVector<uint8_t>::operator<<(std::ostream& os) const
+std::ostream& MyVector<bool>::operator<<(std::ostream& os) const
 {
-    std::cout << m_ptr[0] << std::endl;
     for (int i = 0; i < m_size; ++i)
     {
-        std::cout << ((m_ptr[i / BYTE] >> (i % BYTE)) & 1) << ' ';
+        std::cout << (*this)[i] << ' ';
     }
     return os;
 }
 
-MyVector<uint8_t>::MyVector()
+bool MyVector<bool>::operator[](size_t index) const
+{
+    return (m_ptr[index / BYTE] >> (index % BYTE)) & 1;
+}
+
+bool MyVector<bool>::at(size_t index) const
+{
+    if (index >= m_size)
+    {
+        std::cerr << "Index >= m_size for [] operator:\n";
+        exit(-1);
+    }
+
+    return (m_ptr[index / BYTE] >> (index % BYTE)) & 1;
+}
+
+MyVector<bool>::MyVector()
 {
 	m_ptr = nullptr;
 	m_size = 0;
 	m_capacity = 0;
 }
 
-MyVector<uint8_t>::MyVector(bool obj)
+MyVector<bool>::MyVector(bool obj)
 {
 	m_capacity = 1;
 	m_ptr = new uint8_t [m_capacity]{0};
@@ -327,7 +342,7 @@ MyVector<uint8_t>::MyVector(bool obj)
 	m_size = 1;
 }
 
-MyVector<uint8_t>::MyVector(std::initializer_list<bool> list)
+MyVector<bool>::MyVector(std::initializer_list<bool> list)
 {
 	m_size = list.size();
 	m_capacity = m_size / BYTE + 1;
@@ -336,14 +351,12 @@ MyVector<uint8_t>::MyVector(std::initializer_list<bool> list)
 	int index = 0;
 	for (const auto& elem : list)
 	{
-        std::cout << elem << ' ';
 		m_ptr[index / BYTE] |= elem << (index % BYTE);
-        std::cout << m_ptr[index / BYTE] << ' ' << (elem << (index % BYTE)) << std::endl;
         ++index;
 	}
 }
 
-MyVector<uint8_t>::MyVector(const MyVector<uint8_t>& other) noexcept
+MyVector<bool>::MyVector(const MyVector<bool>& other) noexcept
 {
 	m_size = other.m_size;
 	m_capacity = other.m_capacity;
@@ -355,7 +368,7 @@ MyVector<uint8_t>::MyVector(const MyVector<uint8_t>& other) noexcept
 	}
 }
 
-MyVector<uint8_t>::MyVector(MyVector<uint8_t>&& other)
+MyVector<bool>::MyVector(MyVector<bool>&& other)
 {
 	m_size = other.m_size;
 	m_capacity = other.m_capacity;
@@ -366,18 +379,18 @@ MyVector<uint8_t>::MyVector(MyVector<uint8_t>&& other)
 	other.m_ptr = nullptr;
 }
 
-MyVector<uint8_t>::~MyVector()
+MyVector<bool>::~MyVector()
 {
     delete[] m_ptr;
     m_ptr = nullptr;
 }
 
-uint8_t* MyVector<uint8_t>::data() const
+uint8_t* MyVector<bool>::data() const
 {
     return m_ptr;
 }
 
-void MyVector<uint8_t>::resize(size_t new_size)
+void MyVector<bool>::resize(size_t new_size)
 {
     if (new_size > m_max_size)
     {
@@ -385,6 +398,7 @@ void MyVector<uint8_t>::resize(size_t new_size)
         exit(-1);
     }
 
+    new_size = new_size / BYTE + static_cast<bool>(new_size % 8);
     if (m_ptr == nullptr)
     {
         m_capacity = new_size;
@@ -411,9 +425,27 @@ void MyVector<uint8_t>::resize(size_t new_size)
     }
 }
 
-void MyVector<uint8_t>::push_back(bool val)
+void MyVector<bool>::shrink_to_fit()
 {
-    if (m_size > m_max_size - 10)
+    size_t wanted_size = m_size / BYTE + static_cast<bool>(m_size % BYTE); 
+    if (wanted_size < m_capacity)
+    {
+        m_capacity = wanted_size;
+        uint8_t* new_ptr = new uint8_t [m_capacity];
+        for (int i = 0; i < wanted_size; ++i)
+        {
+            new_ptr[i] = m_ptr[i];
+        }
+
+        delete[] m_ptr;
+        m_ptr = new_ptr;
+        new_ptr = nullptr;
+    }
+}
+
+void MyVector<bool>::push_back(bool val)
+{
+    if (m_size > m_max_size - 16)
     {
         std::cerr << "m_size > m_max_size - 10 in push_back:\n";
         exit(-1);
@@ -424,6 +456,50 @@ void MyVector<uint8_t>::push_back(bool val)
         resize(m_capacity + 2);    
     }
 
-    m_ptr[m_size / BYTE] |= val << (m_size % 8);
+    m_ptr[m_size / BYTE] &= ~(1 << (m_size % BYTE));
+    m_ptr[m_size / BYTE] |= val << (m_size % BYTE);
     ++m_size;
+}
+
+void MyVector<bool>::pop_back()
+{
+    if (m_size == 0)
+    {
+        std::cerr << "Size is 0 for pop:\n";
+        exit(-1);
+    }
+
+    --m_size;
+}
+
+void MyVector<bool>::swap(MyVector<bool>& other)
+{
+    std::swap(m_size, other.m_size);
+    std::swap(m_capacity, other.m_capacity);
+    std::swap(m_ptr, other.m_ptr);
+}
+
+size_t MyVector<bool>::size() const
+{
+    return m_size;
+}
+
+size_t MyVector<bool>::capacity() const
+{
+    return m_capacity;
+}
+
+const size_t MyVector<bool>::max_size() const
+{
+    return m_max_size;
+}
+
+void MyVector<bool>::clear()
+{
+    m_size = 0;
+}
+
+bool MyVector<bool>::empty() const
+{
+    return m_size == 0;
 }
