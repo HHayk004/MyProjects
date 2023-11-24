@@ -217,7 +217,7 @@ MyVector<T>& MyVector<T>::operator=(MyVector&& other)
     m_capacity = other.m_capacity;
 
     delete[] m_ptr;
-    m_ptr = new T [m_capacity];
+    m_ptr = other.m_ptr;
 
     other.m_size = 0;
     other.m_capacity = 0;
@@ -305,15 +305,63 @@ std::ostream& MyVector<bool>::operator<<(std::ostream& os) const
 {
     for (int i = 0; i < m_size; ++i)
     {
-        std::cout << (*this)[i] << ' ';
+        std::cout << ((m_ptr[i / BYTE] >> (i % BYTE)) & 1) << ' ';
     }
     return os;
 }
 
-bool MyVector<bool>::operator[](size_t index) const
+MyVector<bool>& MyVector<bool>::operator=(std::initializer_list<bool> list)
 {
-    return (m_ptr[index / BYTE] >> (index % BYTE)) & 1;
+    m_size = list.size();
+    
+    if (m_size > m_capacity)
+    {
+        resize(m_size);
+    }    
+
+    int index = 0;
+    for (const auto& elem: list)
+    {
+        m_ptr[index] = elem;
+    }
+
+    return *this;
 }
+
+MyVector<bool>& MyVector<bool>::operator=(const MyVector& other)
+{
+    if (this != &other)
+    {
+        m_size = other.m_size;
+        m_capacity = other.m_capacity;
+
+        delete[] m_ptr;
+        m_ptr = new uint8_t [m_capacity];
+    
+        for (int i = 0; i < m_size; ++i)
+        {
+            m_ptr[i] = other.m_ptr[i];
+        }
+    }
+
+    return *this;
+}
+
+MyVector<bool>& MyVector<bool>::operator=(MyVector&& other)
+{
+    m_size = other.m_size;
+    m_capacity = other.m_capacity;
+
+    delete[] m_ptr;
+    m_ptr = other.m_ptr;
+
+    other.m_size = 0;
+    other.m_capacity = 0;
+    other.m_ptr = nullptr;
+
+    return *this;
+}
+
 
 bool MyVector<bool>::at(size_t index) const
 {

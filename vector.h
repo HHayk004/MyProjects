@@ -95,7 +95,10 @@
 		    ~MyVector();
     
             std::ostream& operator<<(std::ostream&) const;
-            bool operator[](size_t) const;            
+
+            MyVector& operator=(std::initializer_list<bool>);
+            MyVector& operator=(const MyVector&);
+            MyVector& operator=(MyVector&&); 
 
             uint8_t* data() const;
             bool at(size_t) const;
