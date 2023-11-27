@@ -147,6 +147,24 @@ void MyVector<T>::erase(size_t pos)
 }
 
 template <typename T>
+void MyVector<T>::erase(size_t begin, size_t end)
+{
+    if (end < begin || end >= m_size)
+    {
+        std::cerr << "Wrong indexes for erase:\n";
+        exit(-1);
+    }
+    
+    size_t delta = end - begin;
+    for (int i = begin; i < m_size - delta; ++i)
+    {
+        m_ptr[i] = m_ptr[i + delta];
+    }
+
+    m_size -= delta;
+}
+
+template <typename T>
 bool MyVector<T>::empty() const
 {
     return m_size == 0;

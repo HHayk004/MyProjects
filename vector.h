@@ -82,6 +82,7 @@
         
             void insert(size_t, T);
             void erase(size_t);
+            void erase(size_t, size_t);
 
             void swap(MyVector&);
 
