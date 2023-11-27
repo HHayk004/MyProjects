@@ -140,7 +140,7 @@ void MyVector<T>::erase(size_t pos)
 
     for (int i = pos; i < m_size - 1; ++i)
     {
-        m_ptr[i] = m_ptr[i + 1];
+        m_ptr[i] = m_ptr[i + 1]; 
     }
 
     --m_size;
@@ -150,6 +150,38 @@ template <typename T>
 bool MyVector<T>::empty() const
 {
     return m_size == 0;
+}
+
+template <typename T>
+void MyVector<T>::reserve(size_t new_capacity)
+{
+    if (new_capacity > m_max_size)
+    {
+        std::cerr << "Wrong size for reserve:\n";
+        exit(-1);
+    }
+
+    if (new_capacity > m_capacity)
+    {
+        m_capacity = new_capacity;
+        if (m_ptr == nullptr)
+        {
+            m_ptr = new T [m_capacity];
+        }
+
+        else
+        {
+            T* new_ptr = new T [m_capacity];
+            for (int i = 0; i < m_size; ++i)
+            {
+                new_ptr[i] = m_ptr[i];
+            }
+
+            delete[] m_ptr;
+            m_ptr = new_ptr;
+            new_ptr = nullptr;      
+        }
+    }
 }
 
 template <typename T>
@@ -181,10 +213,7 @@ void MyVector<T>::resize(size_t new_size)
         new_ptr = nullptr;
     }
 
-    else
-    {
-        m_size = new_size;
-    }
+    m_size = new_size;
 }
 
 template <typename T>

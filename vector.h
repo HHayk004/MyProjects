@@ -73,6 +73,7 @@
 
             void shrink_to_fit();
         
+            void reserve(size_t);
             void resize(size_t);
             bool empty() const;        
         
