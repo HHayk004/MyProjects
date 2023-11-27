@@ -107,6 +107,46 @@ void MyVector<T>::pop_back()
 }
 
 template <typename T>
+void MyVector<T>::insert(size_t pos, T val)
+{
+    if (pos > m_size)
+    {
+        std::cerr << "Wrong index for index:\n";
+        exit(-1);
+    }
+
+    if (m_size == m_capacity)
+    {
+        resize(m_capacity + 10);
+    }
+
+    for (int i = m_size; i > pos; --i)
+    {
+        m_ptr[i] = m_ptr[i - 1];
+    }
+
+    m_ptr[pos] = val;
+    ++m_size;
+}
+
+template <typename T>
+void MyVector<T>::erase(size_t pos)
+{
+    if (pos >= m_size)
+    {
+        std::cerr << "Wrong index for erase:\n";
+        exit(-1);
+    }
+
+    for (int i = pos; i < m_size - 1; ++i)
+    {
+        m_ptr[i] = m_ptr[i + 1];
+    }
+
+    --m_size;
+}
+
+template <typename T>
 bool MyVector<T>::empty() const
 {
     return m_size == 0;

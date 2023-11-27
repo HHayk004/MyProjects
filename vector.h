@@ -1,5 +1,5 @@
 #ifndef VECTOR_PROTO_H
-#define VECTOR_PROTO_H
+    #define VECTOR_PROTO_H
 
     #ifndef IOSTREAM
         #define IOSTREAM
@@ -79,6 +79,9 @@
             void push_back(T);
             void pop_back();
         
+            void insert(size_t, T);
+            void erase(size_t);
+
             void swap(MyVector&);
 
             size_t size() const;
