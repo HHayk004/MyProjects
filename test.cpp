@@ -3,9 +3,9 @@
 
 int main()
 {
-    MyVector<int> vec = {10, 2, 4, 5};
-    
-    vec.reserve(20);
+    MyVector<bool> vec = {1, 0, 1, 1, 0};
+   
+    vec.reserve(10);
 
     std::cout << vec.size() << ' ' << vec.capacity() << std::endl;
     std::cout << vec << std::endl;

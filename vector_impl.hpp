@@ -202,7 +202,7 @@ void MyVector<T>::resize(size_t new_size)
     else if (new_size > m_capacity)
     {
         m_capacity = new_size;
-        T* new_ptr = new T [m_capacity]{};
+        T* new_ptr = new T [m_capacity]{0};
         for (int i = 0; i < m_size; ++i)
         {
             new_ptr[i] = m_ptr[i];
@@ -507,6 +507,38 @@ uint8_t* MyVector<bool>::data() const
     return m_ptr;
 }
 
+void MyVector<bool>::reserve(size_t new_capacity)
+{
+    if (new_capacity > m_max_size)
+    {
+        std::cerr << "Erong size for reserve:\n";
+        exit(-1);
+    }
+
+    new_capacity = new_capacity / BYTE + static_cast<bool>(new_capacity % BYTE);
+    if (new_capacity > m_capacity)
+    {
+        m_capacity = new_capacity;
+        if (m_ptr == nullptr)
+        {
+            m_ptr = new uint8_t [m_capacity];
+        }
+
+        else
+        {
+            uint8_t* new_ptr = new uint8_t [m_capacity];
+            for (int i = 0; i < m_size; ++i)
+            {
+                new_ptr[i] = m_ptr[i];
+            }
+
+            delete[] m_ptr;
+            m_ptr = new_ptr;
+            new_ptr = nullptr;      
+        }
+    }
+}
+
 void MyVector<bool>::resize(size_t new_size)
 {
     if (new_size > m_max_size)
@@ -562,7 +594,7 @@ void MyVector<bool>::shrink_to_fit()
 
 void MyVector<bool>::push_back(bool val)
 {
-    if (m_size > m_max_size - 16)
+    if (m_size > m_max_size - 10)
     {
         std::cerr << "m_size > m_max_size - 10 in push_back:\n";
         exit(-1);
