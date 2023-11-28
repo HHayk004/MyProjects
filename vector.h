@@ -32,7 +32,7 @@
 		    MyVector(const MyVector&) noexcept;
             MyVector(MyVector&&);
 		    ~MyVector();
-            
+ 
             /*
             class iterator
             {
@@ -109,7 +109,22 @@
 		    MyVector(const MyVector<bool>&) noexcept;
             MyVector(MyVector<bool>&&);
 		    ~MyVector();
-    
+            
+            class reference {
+                private:
+                    uint8_t* ptr;
+                    size_t index;
+                    bool flag;
+                
+                public:
+                    reference(uint8_t*, size_t);
+                    reference(const reference& obj);
+                    
+                    reference operator=(const reference& obj);
+                    reference operator=(bool flag);
+            };  
+            
+            reference operator[](size_t index);
             std::ostream& operator<<(std::ostream&) const;
 
             MyVector& operator=(std::initializer_list<bool>);

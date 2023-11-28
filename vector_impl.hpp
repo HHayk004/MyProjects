@@ -520,6 +520,11 @@ MyVector<bool>::~MyVector()
     m_ptr = nullptr;
 }
 
+MyVector<bool>::reference operator[](size_t index)
+{
+    return Vector::reference(m_ptr, index);
+}
+
 uint8_t* MyVector<bool>::data() const
 {
     return m_ptr;
