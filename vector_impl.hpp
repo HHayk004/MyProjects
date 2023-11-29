@@ -520,9 +520,20 @@ MyVector<bool>::~MyVector()
     m_ptr = nullptr;
 }
 
-MyVector<bool>::reference operator[](size_t index)
+MyVector<bool>::Reference MyVector<bool>::operator[](size_t index)
 {
-    return Vector::reference(m_ptr, index);
+    return MyVector::Reference(m_ptr, index);
+}
+
+MyVector<bool>::Reference::Reference(uint8_t* ptr1, size_t index1) : 
+	ptr(ptr1), index(index1)
+{
+	flag = (ptr[index / BYTE] >> (index % BYTE)) & 1;
+}
+
+MyVector<bool>::Reference::operator bool() const
+{
+	return flag;
 }
 
 uint8_t* MyVector<bool>::data() const

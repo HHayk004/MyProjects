@@ -110,21 +110,22 @@
             MyVector(MyVector<bool>&&);
 		    ~MyVector();
             
-            class reference {
+            class Reference {
                 private:
                     uint8_t* ptr;
                     size_t index;
                     bool flag;
                 
                 public:
-                    reference(uint8_t*, size_t);
-                    reference(const reference& obj);
-                    
-                    reference operator=(const reference& obj);
-                    reference operator=(bool flag);
+                    Reference(uint8_t*, size_t);
+                    Reference(const Reference& obj);
+                   
+					operator bool() const; 
+                    Reference operator=(const Reference& obj);
+                    Reference operator=(bool flag);
             };  
             
-            reference operator[](size_t index);
+            Reference operator[](size_t index);
             std::ostream& operator<<(std::ostream&) const;
 
             MyVector& operator=(std::initializer_list<bool>);
