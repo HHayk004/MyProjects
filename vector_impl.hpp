@@ -531,6 +531,26 @@ MyVector<bool>::Reference::Reference(uint8_t* ptr1, size_t index1) :
 	flag = (ptr[index / BYTE] >> (index % BYTE)) & 1;
 }
 
+MyVector<bool>::Reference& MyVector<bool>::Reference::operator=(const Reference& obj)
+{
+	if (flag != obj.flag)
+	{
+		ptr[index / BYTE] &= ~(1 << (index % BYTE));
+		ptr[index / BYTE] |= (obj.flag << (index % BYTE));
+	}
+	return *this;
+}
+
+MyVector<bool>::Reference& MyVector<bool>::Reference::operator=(bool flag)
+{
+	if (this->flag != flag)
+	{
+		ptr[index / BYTE] &= ~(1 << (index % BYTE));
+		ptr[index / BYTE] |= (flag << (index % BYTE));
+	}
+	return *this;
+}
+
 MyVector<bool>::Reference::operator bool() const
 {
 	return flag;
@@ -679,6 +699,11 @@ const size_t MyVector<bool>::max_size() const
 
 void MyVector<bool>::clear()
 {
+	int size = m_size / BYTE + static_cast<bool>(m_size % BYTE);
+	for (int i = 0; i < size; ++i)
+	{
+		m_ptr[i] = 0;
+	}
     m_size = 0;
 }
 
