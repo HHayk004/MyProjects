@@ -118,7 +118,8 @@
                 
                 public:
                     Reference(uint8_t*, size_t);
-                   
+					Reference(const Reference&);
+					Reference(Reference&&);                   
 					operator bool() const; 
                     Reference& operator=(const Reference& obj);
                     Reference& operator=(bool flag);

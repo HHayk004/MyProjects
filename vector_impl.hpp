@@ -531,6 +531,23 @@ MyVector<bool>::Reference::Reference(uint8_t* ptr1, size_t index1) :
 	flag = (ptr[index / BYTE] >> (index % BYTE)) & 1;
 }
 
+MyVector<bool>::Reference::Reference(const Reference& obj)
+{
+	index = obj.index;
+	ptr = obj.ptr;
+	flag = obj.flag;
+}
+
+MyVector<bool>::Reference::Reference(Reference&& obj)
+{
+	index = obj.index;
+	ptr = obj.ptr;
+	flag = obj.flag;
+	obj.ptr = nullptr;
+	obj.index = 0;
+	obj.flag = 0;
+}
+
 MyVector<bool>::Reference& MyVector<bool>::Reference::operator=(const Reference& obj)
 {
 	if (flag != obj.flag)
