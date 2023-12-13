@@ -50,6 +50,9 @@
 					bool operator!=(const Iterator&) const;
 			};
 
+            Iterator begin() const;
+            Iterator end() const;
+
             T& operator[](const size_t) const;
 
             MyVector& operator=(std::initializer_list<T>);

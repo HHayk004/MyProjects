@@ -397,7 +397,7 @@ template <typename T>
 typename MyVector<T>::Iterator MyVector<T>::Iterator::operator++()
 {
 	++ptr;
-	return this;
+	return *this;
 }
 
 template <typename T>
@@ -409,16 +409,31 @@ typename MyVector<T>::Iterator MyVector<T>::Iterator::operator++(int)
 }
 
 template <typename T>
-bool MyVector<T>::Iterator::opearator==(MyVector<T>::Iterator other)
+bool MyVector<T>::Iterator::operator==(const MyVector<T>::Iterator& other) const
 {
-	return this->ptr == other->ptr;
+	return this->ptr == other.ptr;
 }
 
 template <typename T>
-typename bool MyVector<T>::Iterator::operator!=(MyVector<T>::Iterator other)
+bool MyVector<T>::Iterator::operator!=(const MyVector<T>::Iterator& other) const
 {
 	return this->ptr != other.ptr;
 }
+
+template <typename T>
+typename MyVector<T>::Iterator MyVector<T>::begin() const
+{
+    Iterator it(m_ptr);
+    return it;
+}
+
+template <typename T>
+typename MyVector<T>::Iterator MyVector<T>::end() const
+{
+    Iterator it(m_ptr + m_size);
+    return it;
+}
+
 
 template <typename T>
 T& MyVector<T>::Iterator::operator*() const

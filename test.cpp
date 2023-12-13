@@ -3,12 +3,10 @@
 
 int main()
 {
-    MyVector<int> vec = {1, 0, 1, 1, 0, 1, 0, 1};
-	vec.push_back(0);
-    vec[8] = vec[0];
-	for (int i = 0; i < vec.size(); ++i)
+    MyVector<int> vec = {1, 2, 3, 4, 5, 6};
+    for (MyVector<int>::Iterator it = vec.begin(); it != vec.end(); ++it)
 	{
-		std::cout << vec[i] << ' ';
+		std::cout << *it << ' ';
 	}
 	std::cout << std::endl;
 
