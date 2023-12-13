@@ -33,29 +33,22 @@
             MyVector(MyVector&&);
 		    ~MyVector();
  
-            /*
-            class iterator
-            {
-                using iterator_category = std::forward_iterator_tag;
-                using difference_type = ptrdiff_t;
-                using value_type = T;
-                using pointer = value_type*;
-                using reference = value_type&;
+			class Iterator{
+				private:
+					T* ptr;
 
-                private:
-                    pointer m_it;
-            
-                public:
-                    Iterator(pointer ptr);
-
-                    Iterator& operator++();
-                    Iterator& operator--();
-                    Iterator& operator+(const int);
-                    Iterator& operator-(const int);
-                    bool operator==(Iterator);
-                    bool operator!=(Iterator);
-            };
-            */
+				public:
+					explicit Iterator(T*);
+					
+					Iterator& operator=(const Iterator&);
+					Iterator operator++();
+					Iterator operator++(int);
+					
+					T& operator*() const;
+					T* operator->() const;
+					bool operator==(const Iterator&) const;
+					bool operator!=(const Iterator&) const;
+			};
 
             T& operator[](const size_t) const;
 
@@ -154,7 +147,7 @@
     };
 #endif
 
-#ifndef VECTOR_IMPL_HPP
-    #define VECTOR_IMPL_HPP
-    #include "vector_impl.hpp"
+#ifndef VECTOR_HPP
+    #define VECTOR_HPP
+    #include "vector.hpp"
 #endif

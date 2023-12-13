@@ -383,6 +383,55 @@ void MyVector<T>::clear()
     m_size = 0;
 }
 
+template <typename T>
+MyVector<T>::Iterator::Iterator(T* ptr1) : ptr(ptr1){}
+
+template <typename T>
+typename MyVector<T>::Iterator& MyVector<T>::Iterator::operator=(const MyVector<T>::Iterator& other)
+{
+	ptr = other.ptr;
+	return *this;
+}
+
+template <typename T>
+typename MyVector<T>::Iterator MyVector<T>::Iterator::operator++()
+{
+	++ptr;
+	return this;
+}
+
+template <typename T>
+typename MyVector<T>::Iterator MyVector<T>::Iterator::operator++(int)
+{
+	Iterator tmp = *this;
+	++ptr;
+	return tmp;
+}
+
+template <typename T>
+bool MyVector<T>::Iterator::opearator==(MyVector<T>::Iterator other)
+{
+	return this->ptr == other->ptr;
+}
+
+template <typename T>
+typename bool MyVector<T>::Iterator::operator!=(MyVector<T>::Iterator other)
+{
+	return this->ptr != other.ptr;
+}
+
+template <typename T>
+T& MyVector<T>::Iterator::operator*() const
+{
+	return *ptr;
+}
+
+template <typename T>
+T* MyVector<T>::Iterator::operator->() const
+{
+	return ptr;
+}
+
 std::ostream& operator<<(std::ostream& os, const MyVector<bool>& other)
 {
     return other.operator<<(os);
