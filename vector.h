@@ -33,25 +33,9 @@
             MyVector(MyVector&&);
 		    ~MyVector();
  
-			class Iterator{
-				private:
-					T* ptr;
-
-				public:
-					explicit Iterator(T*);
-					
-					Iterator& operator=(const Iterator&);
-					Iterator operator++();
-					Iterator operator++(int);
-					
-					T& operator*() const;
-					T* operator->() const;
-					bool operator==(const Iterator&) const;
-					bool operator!=(const Iterator&) const;
-			};
-
-            Iterator begin() const;
-            Iterator end() const;
+			// #include "input_iterator.h"	
+			//#include "forward_iterator.h" 
+			#include "bidirectional_iterator.h"
 
             T& operator[](const size_t) const;
 
@@ -153,4 +137,21 @@
 #ifndef VECTOR_HPP
     #define VECTOR_HPP
     #include "vector.hpp"
+#endif
+
+/*
+#ifndef INPUT_ITERATOR_HPP
+	#define INPUT_ITERATOR_HPP
+	#include "input_iterator.hpp"
+#endif
+
+#ifndef FORWARD_ITERATOR_HPP
+	#define FORWARD_ITERATOR_HPP
+	#include "forward_iterator.hpp"
+#endif
+*/
+
+#ifndef BIDIRECTIONAL_ITERATOR_HPP
+	#define BIDIREECTIONAL_ITERATOR_HPP
+	#include "bidirectional_iterator.hpp"
 #endif

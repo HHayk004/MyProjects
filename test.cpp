@@ -4,10 +4,13 @@
 int main()
 {
     MyVector<int> vec = {1, 2, 3, 4, 5, 6};
-    for (MyVector<int>::Iterator it = vec.begin(); it != vec.end(); ++it)
+    MyVector<int>::BidirectionalIterator it = vec.end();
+	--it; 
+	for (;it != vec.begin(); --it)
 	{
 		std::cout << *it << ' ';
 	}
+	std::cout << *it;
 	std::cout << std::endl;
 
     return 0;
