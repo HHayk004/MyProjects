@@ -18,7 +18,7 @@ template <typename T>
 MyVector<T>::MyVector(T obj)
 {
 	m_capacity = 10;
-	m_ptr = new T [m_capacity]{0};
+	m_ptr = new T [m_capacity]{};
 
 	m_ptr[0] = obj;
 	m_size = 1;
@@ -29,7 +29,7 @@ MyVector<T>::MyVector(std::initializer_list<T> list)
 {
 	m_size = list.size();
 	m_capacity = m_size + 10;
-	m_ptr = new T [m_capacity]{0};
+	m_ptr = new T [m_capacity]{};
 
 	int index = 0;
 	for (const auto& elem : list)
@@ -45,7 +45,7 @@ MyVector<T>::MyVector(const MyVector& other) noexcept
 	m_size = other.m_size;
 	m_capacity = other.m_capacity;
 
-	m_ptr = new T [m_size]{0}; 
+	m_ptr = new T [m_size]{}; 
 	for (int i = 0; i < m_size; ++i)
 	{
 		m_ptr[i] = other[i];
@@ -214,13 +214,13 @@ void MyVector<T>::resize(size_t new_size)
     if (m_ptr == nullptr)
     {
         m_capacity = new_size;
-        m_ptr = new T [m_capacity]{0};
+        m_ptr = new T [m_capacity]{};
     }
     
     else if (new_size > m_capacity)
     {
         m_capacity = new_size;
-        T* new_ptr = new T [m_capacity]{0};
+        T* new_ptr = new T [m_capacity]{};
         for (int i = 0; i < m_size; ++i)
         {
             new_ptr[i] = m_ptr[i];
@@ -230,8 +230,6 @@ void MyVector<T>::resize(size_t new_size)
         m_ptr = new_ptr;
         new_ptr = nullptr;
     }
-
-    m_size = new_size;
 }
 
 template <typename T>
@@ -630,7 +628,7 @@ MyVector<bool>::MyVector()
 MyVector<bool>::MyVector(bool obj)
 {
 	m_capacity = 1;
-	m_ptr = new uint8_t [m_capacity]{0};
+	m_ptr = new uint8_t [m_capacity]{};
 
 	m_ptr[0] = obj;
 	m_size = 1;
@@ -640,7 +638,7 @@ MyVector<bool>::MyVector(std::initializer_list<bool> list)
 {
 	m_size = list.size();
 	m_capacity = m_size / BYTE + 1;
-	m_ptr = new uint8_t [m_capacity]{0};
+	m_ptr = new uint8_t [m_capacity]{};
 
 	int index = 0;
 	for (const auto& elem : list)
@@ -781,13 +779,13 @@ void MyVector<bool>::resize(size_t new_size)
     if (m_ptr == nullptr)
     {
         m_capacity = new_size;
-        m_ptr = new uint8_t [m_capacity]{0};
+        m_ptr = new uint8_t [m_capacity]{};
     }
     
     else if (new_size > m_capacity)
     {
         m_capacity = new_size;
-        uint8_t* new_ptr = new uint8_t [m_capacity]{0};
+        uint8_t* new_ptr = new uint8_t [m_capacity]{};
         for (int i = 0; i < m_size; ++i)
         {
             new_ptr[i] = m_ptr[i];

@@ -1,20 +1,9 @@
 #ifndef VECTOR_PROTO_H
     #define VECTOR_PROTO_H
 
-    #ifndef IOSTREAM
-        #define IOSTREAM
-        #include <iostream>
-    #endif
-
-    #ifndef INITIALIZER_LIST
-        #define INITIALIZER_LIST
-        #include <initializer_list>
-    #endif
-
-    #ifndef LIMITS
-        #define LIMITS
-        #include <limits>
-    #endif    
+    #include <iostream>
+	#include <initializer_list>
+	#include <limits>
 
     template <typename T>
     class MyVector 
