@@ -473,6 +473,30 @@ typename MyVector<T>::Iterator MyVector<T>::Iterator::operator--(int)
 }
 
 template <typename T>
+bool MyVector<T>::Iterator::operator<(const MyVector<T>::Iterator& other) const
+{
+	return ptr < other.ptr;
+}
+
+template <typename T>
+bool MyVector<T>::Iterator::operator<=(const MyVector<T>::Iterator& other) const
+{
+	return ptr <= other.ptr;
+}
+
+template <typename T>
+bool MyVector<T>::Iterator::operator>(const MyVector<T>::Iterator& other) const
+{
+	return ptr > other.ptr;
+}
+
+template <typename T>
+bool MyVector<T>::Iterator::operator>=(const MyVector<T>::Iterator& other) const
+{
+	return ptr >= other.ptr;
+}
+
+template <typename T>
 bool MyVector<T>::Iterator::operator==(const MyVector<T>::Iterator& other) const
 {
 	return this->ptr == other.ptr;
@@ -496,6 +520,14 @@ typename MyVector<T>::Iterator MyVector<T>::end() const
 {
     Iterator it(m_ptr + m_size);
     return it;
+}
+
+template <typename T>
+T& MyVector<T>::Iterator::operator[](int disp) const
+{
+	Iterator tmp = *this;
+	tmp += disp;
+	return *tmp;
 }
 
 template <typename T>

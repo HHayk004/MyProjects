@@ -82,6 +82,30 @@ typename MyVector<T>::RandomAccessIterator MyVector<T>::RandomAccessIterator::op
 }
 
 template <typename T>
+bool MyVector<T>::Iterator::operator<(const MyVector<T>::Iterator& other) const
+{
+	return ptr < other.ptr;
+}
+
+template <typename T>
+bool MyVector<T>::Iterator::operator<=(const MyVector<T>::Iterator& other) const
+{
+	return ptr <= other.ptr;
+}
+
+template <typename T>
+bool MyVector<T>::Iterator::operator>(const MyVector<T>::Iterator& other) const
+{
+	return ptr > other.ptr;
+}
+
+template <typename T>
+bool MyVector<T>::Iterator::operator>=(const MyVector<T>::Iterator& other) const
+{
+	return ptr >= other.ptr;
+}
+
+template <typename T>
 bool MyVector<T>::RandomAccessIterator::operator==(const MyVector<T>::RandomAccessIterator& other) const
 {
 	return this->ptr == other.ptr;

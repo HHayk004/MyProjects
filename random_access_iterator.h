@@ -18,6 +18,13 @@ class RandomAccessIterator {
 					
 		T& operator*() const;
 		T* operator->() const;
+
+		bool operator<(const Iterator&) const;
+		bool operator<=(const Iterator&) const;
+
+		bool operator>(const Iterator&) const;
+		bool operator>=(const Iterator&) const;
+
 		bool operator==(const RandomAccessIterator&) const;
 		bool operator!=(const RandomAccessIterator&) const;
 };

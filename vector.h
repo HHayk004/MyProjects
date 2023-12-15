@@ -50,9 +50,17 @@
 					Iterator operator-=(size_t);
 					Iterator operator--();
 					Iterator operator--(int);
-								
+
+					T& operator[](int) const;
 					T& operator*() const;
 					T* operator->() const;
+					
+					bool operator<(const Iterator&) const;
+					bool operator<=(const Iterator&) const;
+					
+					bool operator>(const Iterator&) const;
+					bool operator>=(const Iterator&) const;
+					
 					bool operator==(const Iterator&) const;
 					bool operator!=(const Iterator&) const;
 			};
