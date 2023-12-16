@@ -230,6 +230,11 @@ void MyVector<T>::resize(size_t new_size)
         m_ptr = new_ptr;
         new_ptr = nullptr;
     }
+
+    else
+    {
+        m_size = new_size; 
+    }
 }
 
 template <typename T>
