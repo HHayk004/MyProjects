@@ -93,12 +93,52 @@ void MyVector<T>::push_back(T val)
 }
 
 template <typename T>
+void MyVector<T>::push_front(T val)
+{
+    if (m_size > m_max_size - 10)
+    {
+        std::cerr << "m_size > m_max_size - 10 in push_back:\n";
+        exit(-1);
+    }
+
+    if (m_size == m_capacity)
+    {
+        resize(m_capacity + 10);    
+    }
+    
+    for (int i = m_size; i > 0; --i)
+    {
+        m_ptr[i] = m_ptr[i - 1];
+    }
+
+    m_ptr[0] = val;
+    ++m_size;
+}
+
+template <typename T>
 void MyVector<T>::pop_back()
 {
     if (m_size == 0)
     {
         std::cerr << "Wrong index for pop:\n";
         exit(-1);
+    }
+
+    --m_size;
+}
+
+template <typename T>
+void MyVector<T>::pop_front()
+{
+    if (m_size == 0)
+    {
+        std::cerr << "Wrong index for pop:\n";
+        exit(-1);
+    }
+
+    for (int i = 1; i < m_size; ++i)
+    {
+        m_ptr[i - 1] = m_ptr[i];
     }
 
     --m_size;

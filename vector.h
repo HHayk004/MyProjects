@@ -78,7 +78,9 @@
             bool empty() const;        
         
             void push_back(T);
+            void push_front(T);
             void pop_back();
+            void pop_front();
         
             void insert(size_t, T);
             void erase(size_t);
