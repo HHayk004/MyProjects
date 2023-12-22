@@ -15,13 +15,11 @@ MyVector<T>::MyVector()
 }
 
 template <typename T>
-MyVector<T>::MyVector(T obj)
+MyVector<T>::MyVector(size_t size)
 {
-	m_capacity = 10;
+    m_size = 0;
+	m_capacity = size;
 	m_ptr = new T [m_capacity]{};
-
-	m_ptr[0] = obj;
-	m_size = 1;
 }
 
 template <typename T>
@@ -111,7 +109,7 @@ void MyVector<T>::insert(size_t pos, T val)
 {
     if (pos > m_size)
     {
-        std::cerr << "Wrong index for index:\n";
+        std::cerr << "Wrong index for insert:\n";
         exit(-1);
     }
 

@@ -16,7 +16,7 @@
         
         public:
 		    MyVector();
-		    MyVector(T);
+		    MyVector(size_t);
 		    MyVector(std::initializer_list<T>);
 		    MyVector(const MyVector&) noexcept;
             MyVector(MyVector&&);
