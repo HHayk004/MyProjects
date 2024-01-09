@@ -1,13 +1,13 @@
 #define BYTE (sizeof(uint8_t) * 8)
 
 template<typename T>
-std::ostream& operator<<(std::ostream& os, const MyVector<T>& other)
+std::ostream& operator<<(std::ostream& os, const Vector<T>& other)
 {
     return other.operator<<(os);
 }
 
 template <typename T>
-MyVector<T>::MyVector()
+Vector<T>::Vector()
 {
 	m_ptr = nullptr;
 	m_size = 0;
@@ -15,15 +15,20 @@ MyVector<T>::MyVector()
 }
 
 template <typename T>
-MyVector<T>::MyVector(size_t size)
+Vector<T>::Vector(size_t size, T value)
 {
-    m_size = 0;
-	m_capacity = size;
+    m_size = size;
+	m_capacity = size + 10;
 	m_ptr = new T [m_capacity]{};
+    
+    for (int i = 0; i < size; ++i)
+    {
+        m_ptr[i] = value;
+    }
 }
 
 template <typename T>
-MyVector<T>::MyVector(std::initializer_list<T> list)
+Vector<T>::Vector(std::initializer_list<T> list)
 {
 	m_size = list.size();
 	m_capacity = m_size + 10;
@@ -38,7 +43,7 @@ MyVector<T>::MyVector(std::initializer_list<T> list)
 }
 
 template <typename T>
-MyVector<T>::MyVector(const MyVector& other) noexcept
+Vector<T>::Vector(const Vector& other) noexcept
 {
 	m_size = other.m_size;
 	m_capacity = other.m_capacity;
@@ -51,7 +56,7 @@ MyVector<T>::MyVector(const MyVector& other) noexcept
 }
 
 template <typename T>
-MyVector<T>::MyVector(MyVector&& other)
+Vector<T>::Vector(Vector&& other)
 {
 	m_size = other.m_size;
 	m_capacity = other.m_capacity;
@@ -63,20 +68,20 @@ MyVector<T>::MyVector(MyVector&& other)
 }
 
 template <typename T>
-MyVector<T>::~MyVector()
+Vector<T>::~Vector()
 {
     delete[] m_ptr;
     m_ptr = nullptr;
 }
 
 template <typename T>
-T* MyVector<T>::data() const
+T* Vector<T>::data() const
 {
     return m_ptr;
 }
 
 template <typename T>
-void MyVector<T>::push_back(T val)
+void Vector<T>::push_back(T val)
 {
     if (m_size > m_max_size - 10)
     {
@@ -93,7 +98,7 @@ void MyVector<T>::push_back(T val)
 }
 
 template <typename T>
-void MyVector<T>::push_front(T val)
+void Vector<T>::push_front(T val)
 {
     if (m_size > m_max_size - 10)
     {
@@ -116,7 +121,7 @@ void MyVector<T>::push_front(T val)
 }
 
 template <typename T>
-void MyVector<T>::pop_back()
+void Vector<T>::pop_back()
 {
     if (m_size == 0)
     {
@@ -128,7 +133,7 @@ void MyVector<T>::pop_back()
 }
 
 template <typename T>
-void MyVector<T>::pop_front()
+void Vector<T>::pop_front()
 {
     if (m_size == 0)
     {
@@ -145,9 +150,9 @@ void MyVector<T>::pop_front()
 }
 
 template <typename T>
-void MyVector<T>::insert(size_t pos, T val)
+void Vector<T>::insert(Iterator it, T val)
 {
-    if (pos > m_size)
+    if (it > end())
     {
         std::cerr << "Wrong index for insert:\n";
         exit(-1);
@@ -158,58 +163,86 @@ void MyVector<T>::insert(size_t pos, T val)
         resize(m_capacity + 10);
     }
 
-    for (int i = m_size; i > pos; --i)
+    for (Iterator tmp_it = end(); tmp_it > it; --tmp_it)
     {
-        m_ptr[i] = m_ptr[i - 1];
+        *tmp_it = *(tmp_it - 1);
     }
 
-    m_ptr[pos] = val;
+    *it = val;
     ++m_size;
 }
 
 template <typename T>
-void MyVector<T>::erase(size_t pos)
+void Vector<T>::insert(Iterator it, std::initializer_list<T> list)
 {
-    if (pos >= m_size)
+    if (it > end())
+    {
+        std::cerr << "Wrong index for insert:\n";
+        exit(-1);
+    }
+
+    if (m_size + list.size() > m_capacity)
+    {
+        resize(m_capacity + list.size() + 10);
+    }
+
+    for (Iterator tmp_it = end() + list.size() - 1; tmp_it > it; --tmp_it)
+    {
+        tmp_it = tmp_it - list.size();
+    }
+
+    Iterator tmp_it = it; 
+    for (const auto& elem : list)
+    {
+        *tmp_it = elem;
+        ++tmp_it;
+    }
+    m_size += list.size();
+}
+
+template <typename T>
+void Vector<T>::erase(Iterator it)
+{
+    if (it >= end())
     {
         std::cerr << "Wrong index for erase:\n";
         exit(-1);
     }
 
-    for (int i = pos; i < m_size - 1; ++i)
+    for (Iterator tmp_it = it; tmp_it < end() - 1; ++tmp_it)
     {
-        m_ptr[i] = m_ptr[i + 1]; 
+        *tmp_it = *(tmp_it + 1); 
     }
 
     --m_size;
 }
 
 template <typename T>
-void MyVector<T>::erase(size_t begin, size_t end)
+void Vector<T>::erase(Iterator begin, Iterator end)
 {
-    if (end < begin || end >= m_size)
+    if (end < begin || end >= this->end())
     {
         std::cerr << "Wrong indexes for erase:\n";
         exit(-1);
     }
     
     size_t delta = end - begin;
-    for (int i = begin; i < m_size - delta; ++i)
+    for (Iterator it = begin; it < end; ++it)
     {
-        m_ptr[i] = m_ptr[i + delta];
+        *it = *(it + delta);
     }
 
     m_size -= delta;
 }
 
 template <typename T>
-bool MyVector<T>::empty() const
+bool Vector<T>::empty() const
 {
     return m_size == 0;
 }
 
 template <typename T>
-void MyVector<T>::reserve(size_t new_capacity)
+void Vector<T>::reserve(size_t new_capacity)
 {
     if (new_capacity > m_max_size)
     {
@@ -241,7 +274,7 @@ void MyVector<T>::reserve(size_t new_capacity)
 }
 
 template <typename T>
-void MyVector<T>::resize(size_t new_size)
+void Vector<T>::resize(size_t new_size)
 {
     if (new_size > m_max_size)
     {
@@ -276,7 +309,7 @@ void MyVector<T>::resize(size_t new_size)
 }
 
 template <typename T>
-void MyVector<T>::shrink_to_fit()
+void Vector<T>::shrink_to_fit()
 {
     if (m_size < m_capacity)
     {
@@ -294,13 +327,13 @@ void MyVector<T>::shrink_to_fit()
 }
 
 template <typename T>
-T& MyVector<T>::operator[](const size_t index) const
+T& Vector<T>::operator[](const size_t index) const
 {
     return m_ptr[index];
 }
 
 template <typename T>
-MyVector<T>& MyVector<T>::operator=(std::initializer_list<T> list)
+Vector<T>& Vector<T>::operator=(std::initializer_list<T> list)
 {   
     m_size = list.size();
     
@@ -319,7 +352,7 @@ MyVector<T>& MyVector<T>::operator=(std::initializer_list<T> list)
 }
 
 template <typename T>
-MyVector<T>& MyVector<T>::operator=(const MyVector& other)
+Vector<T>& Vector<T>::operator=(const Vector& other)
 {
     if (this != &other)
     {
@@ -339,7 +372,7 @@ MyVector<T>& MyVector<T>::operator=(const MyVector& other)
 }
 
 template <typename T>
-MyVector<T>& MyVector<T>::operator=(MyVector&& other)
+Vector<T>& Vector<T>::operator=(Vector&& other)
 {
     m_size = other.m_size;
     m_capacity = other.m_capacity;
@@ -355,7 +388,7 @@ MyVector<T>& MyVector<T>::operator=(MyVector&& other)
 }
 
 template <typename T>
-std::ostream& MyVector<T>::operator<<(std::ostream& os) const
+std::ostream& Vector<T>::operator<<(std::ostream& os) const
 {
     for (int i = 0; i < m_size; ++i)
     {
@@ -365,7 +398,7 @@ std::ostream& MyVector<T>::operator<<(std::ostream& os) const
 }
 
 template <typename T>
-T MyVector<T>::at(size_t index) const
+T Vector<T>::at(size_t index) const
 {
     if (index >= m_size)
     {
@@ -377,37 +410,37 @@ T MyVector<T>::at(size_t index) const
 }
 
 template <typename T>
-size_t MyVector<T>::size() const
+size_t Vector<T>::size() const
 {
     return m_size;
 }
 
 template <typename T>
-size_t MyVector<T>::capacity() const
+size_t Vector<T>::capacity() const
 {
     return m_capacity;
 }
 
 template <typename T>
-const size_t MyVector<T>::max_size() const
+const size_t Vector<T>::max_size() const
 {
     return m_max_size;
 }
 
 template <typename T>
-T& MyVector<T>::front() const
+T& Vector<T>::front() const
 {
     return m_ptr[0];
 }
 
 template <typename T>
-T& MyVector<T>::back() const
+T& Vector<T>::back() const
 {    
     return m_ptr[m_size - 1];
 }
 
 template <typename T>
-void MyVector<T>::swap(MyVector& vec)
+void Vector<T>::swap(Vector& vec)
 {
     std::swap(m_ptr, vec.m_ptr);
     std::swap(m_size, vec.m_size);
@@ -415,7 +448,7 @@ void MyVector<T>::swap(MyVector& vec)
 }
 
 template <typename T>
-void MyVector<T>::clear()
+void Vector<T>::clear()
 {
     for (int i = 0; i < m_size; ++i)
     {
@@ -425,27 +458,27 @@ void MyVector<T>::clear()
 }
 
 template <typename T>
-MyVector<T>::Iterator::Iterator() : ptr(nullptr){}
+Vector<T>::Iterator::Iterator() : ptr(nullptr){}
 
 template <typename T>
-MyVector<T>::Iterator::Iterator(T* ptr1) : ptr(ptr1){}
+Vector<T>::Iterator::Iterator(T* ptr1) : ptr(ptr1){}
 
 template <typename T>
-typename MyVector<T>::Iterator& MyVector<T>::Iterator::operator=(const MyVector<T>::Iterator& other)
+typename Vector<T>::Iterator& Vector<T>::Iterator::operator=(const Vector<T>::Iterator& other)
 {
 	ptr = other.ptr;
 	return *this;
 }
 
 template <typename T>
-typename MyVector<T>::Iterator MyVector<T>::Iterator::operator++()
+typename Vector<T>::Iterator Vector<T>::Iterator::operator++()
 {
 	++ptr;
 	return *this;
 }
 
 template <typename T>
-typename MyVector<T>::Iterator MyVector<T>::Iterator::operator++(int)
+typename Vector<T>::Iterator Vector<T>::Iterator::operator++(int)
 {
 	Iterator tmp = *this;
 	++ptr;
@@ -453,7 +486,7 @@ typename MyVector<T>::Iterator MyVector<T>::Iterator::operator++(int)
 }
 
 template <typename T>
-typename MyVector<T>::Iterator MyVector<T>::Iterator::operator+(size_t disp)
+typename Vector<T>::Iterator Vector<T>::Iterator::operator+(size_t disp)
 {
 	Iterator t = *this;
 	for (size_t i = 0; i < disp; ++i)
@@ -465,7 +498,7 @@ typename MyVector<T>::Iterator MyVector<T>::Iterator::operator+(size_t disp)
 }
 
 template <typename T>
-typename MyVector<T>::Iterator MyVector<T>::Iterator::operator+=(size_t disp)
+typename Vector<T>::Iterator Vector<T>::Iterator::operator+=(size_t disp)
 {
 	for (size_t i = 0; i < disp; ++i)
 	{
@@ -476,7 +509,7 @@ typename MyVector<T>::Iterator MyVector<T>::Iterator::operator+=(size_t disp)
 }
 
 template <typename T>
-typename MyVector<T>::Iterator MyVector<T>::Iterator::operator-(size_t disp)
+typename Vector<T>::Iterator Vector<T>::Iterator::operator-(size_t disp)
 {
 	Iterator t = *this;
 	for (size_t i = 0; i < disp; ++i)
@@ -488,7 +521,13 @@ typename MyVector<T>::Iterator MyVector<T>::Iterator::operator-(size_t disp)
 }
 
 template <typename T>
-typename MyVector<T>::Iterator MyVector<T>::Iterator::operator-=(size_t disp)
+size_t Vector<T>::Iterator::operator-(Iterator it)
+{
+    return ptr - it.ptr;
+}
+
+template <typename T>
+typename Vector<T>::Iterator Vector<T>::Iterator::operator-=(size_t disp)
 {
 	for (size_t i = 0; i < disp; ++i)
 	{
@@ -499,14 +538,14 @@ typename MyVector<T>::Iterator MyVector<T>::Iterator::operator-=(size_t disp)
 }
 
 template <typename T>
-typename MyVector<T>::Iterator MyVector<T>::Iterator::operator--()
+typename Vector<T>::Iterator Vector<T>::Iterator::operator--()
 {
 	--ptr;
 	return *this;
 }
 
 template <typename T>
-typename MyVector<T>::Iterator MyVector<T>::Iterator::operator--(int)
+typename Vector<T>::Iterator Vector<T>::Iterator::operator--(int)
 {
 	Iterator tmp = *this;
 	--ptr;
@@ -514,57 +553,57 @@ typename MyVector<T>::Iterator MyVector<T>::Iterator::operator--(int)
 }
 
 template <typename T>
-bool MyVector<T>::Iterator::operator<(const MyVector<T>::Iterator& other) const
+bool Vector<T>::Iterator::operator<(const Vector<T>::Iterator& other) const
 {
 	return ptr < other.ptr;
 }
 
 template <typename T>
-bool MyVector<T>::Iterator::operator<=(const MyVector<T>::Iterator& other) const
+bool Vector<T>::Iterator::operator<=(const Vector<T>::Iterator& other) const
 {
 	return ptr <= other.ptr;
 }
 
 template <typename T>
-bool MyVector<T>::Iterator::operator>(const MyVector<T>::Iterator& other) const
+bool Vector<T>::Iterator::operator>(const Vector<T>::Iterator& other) const
 {
 	return ptr > other.ptr;
 }
 
 template <typename T>
-bool MyVector<T>::Iterator::operator>=(const MyVector<T>::Iterator& other) const
+bool Vector<T>::Iterator::operator>=(const Vector<T>::Iterator& other) const
 {
 	return ptr >= other.ptr;
 }
 
 template <typename T>
-bool MyVector<T>::Iterator::operator==(const MyVector<T>::Iterator& other) const
+bool Vector<T>::Iterator::operator==(const Vector<T>::Iterator& other) const
 {
 	return this->ptr == other.ptr;
 }
 
 template <typename T>
-bool MyVector<T>::Iterator::operator!=(const MyVector<T>::Iterator& other) const
+bool Vector<T>::Iterator::operator!=(const Vector<T>::Iterator& other) const
 {
 	return this->ptr != other.ptr;
 }
 
 template <typename T>
-typename MyVector<T>::Iterator MyVector<T>::begin() const
+typename Vector<T>::Iterator Vector<T>::begin() const
 {
     Iterator it(m_ptr);
     return it;
 }
 
 template <typename T>
-typename MyVector<T>::Iterator MyVector<T>::end() const
+typename Vector<T>::Iterator Vector<T>::end() const
 {
     Iterator it(m_ptr + m_size);
     return it;
 }
 
 template <typename T>
-T& MyVector<T>::Iterator::operator[](int disp) const
+T& Vector<T>::Iterator::operator[](int disp) const
 {
 	Iterator tmp = *this;
 	tmp += disp;
@@ -572,23 +611,23 @@ T& MyVector<T>::Iterator::operator[](int disp) const
 }
 
 template <typename T>
-T& MyVector<T>::Iterator::operator*() const
+T& Vector<T>::Iterator::operator*() const
 {
 	return *ptr;
 }
 
 template <typename T>
-T* MyVector<T>::Iterator::operator->() const
+T* Vector<T>::Iterator::operator->() const
 {
 	return ptr;
 }
 
-std::ostream& operator<<(std::ostream& os, const MyVector<bool>& other)
+std::ostream& operator<<(std::ostream& os, const Vector<bool>& other)
 {
     return other.operator<<(os);
 }
 
-std::ostream& MyVector<bool>::operator<<(std::ostream& os) const
+std::ostream& Vector<bool>::operator<<(std::ostream& os) const
 {
     for (int i = 0; i < m_size; ++i)
     {
@@ -597,7 +636,7 @@ std::ostream& MyVector<bool>::operator<<(std::ostream& os) const
     return os;
 }
 
-MyVector<bool>& MyVector<bool>::operator=(std::initializer_list<bool> list)
+Vector<bool>& Vector<bool>::operator=(std::initializer_list<bool> list)
 {
     m_size = list.size();
     
@@ -615,7 +654,7 @@ MyVector<bool>& MyVector<bool>::operator=(std::initializer_list<bool> list)
     return *this;
 }
 
-MyVector<bool>& MyVector<bool>::operator=(const MyVector& other)
+Vector<bool>& Vector<bool>::operator=(const Vector& other)
 {
     if (this != &other)
     {
@@ -634,7 +673,7 @@ MyVector<bool>& MyVector<bool>::operator=(const MyVector& other)
     return *this;
 }
 
-MyVector<bool>& MyVector<bool>::operator=(MyVector&& other)
+Vector<bool>& Vector<bool>::operator=(Vector&& other)
 {
     m_size = other.m_size;
     m_capacity = other.m_capacity;
@@ -650,7 +689,7 @@ MyVector<bool>& MyVector<bool>::operator=(MyVector&& other)
 }
 
 
-bool MyVector<bool>::at(size_t index) const
+bool Vector<bool>::at(size_t index) const
 {
     if (index >= m_size)
     {
@@ -661,14 +700,14 @@ bool MyVector<bool>::at(size_t index) const
     return (m_ptr[index / BYTE] >> (index % BYTE)) & 1;
 }
 
-MyVector<bool>::MyVector()
+Vector<bool>::Vector()
 {
 	m_ptr = nullptr;
 	m_size = 0;
 	m_capacity = 0;
 }
 
-MyVector<bool>::MyVector(bool obj)
+Vector<bool>::Vector(bool obj)
 {
 	m_capacity = 1;
 	m_ptr = new uint8_t [m_capacity]{};
@@ -677,7 +716,7 @@ MyVector<bool>::MyVector(bool obj)
 	m_size = 1;
 }
 
-MyVector<bool>::MyVector(std::initializer_list<bool> list)
+Vector<bool>::Vector(std::initializer_list<bool> list)
 {
 	m_size = list.size();
 	m_capacity = m_size / BYTE + 1;
@@ -691,7 +730,7 @@ MyVector<bool>::MyVector(std::initializer_list<bool> list)
 	}
 }
 
-MyVector<bool>::MyVector(const MyVector<bool>& other) noexcept
+Vector<bool>::Vector(const Vector<bool>& other) noexcept
 {
 	m_size = other.m_size;
 	m_capacity = other.m_capacity;
@@ -703,7 +742,7 @@ MyVector<bool>::MyVector(const MyVector<bool>& other) noexcept
 	}
 }
 
-MyVector<bool>::MyVector(MyVector<bool>&& other)
+Vector<bool>::Vector(Vector<bool>&& other)
 {
 	m_size = other.m_size;
 	m_capacity = other.m_capacity;
@@ -714,31 +753,31 @@ MyVector<bool>::MyVector(MyVector<bool>&& other)
 	other.m_ptr = nullptr;
 }
 
-MyVector<bool>::~MyVector()
+Vector<bool>::~Vector()
 {
     delete[] m_ptr;
     m_ptr = nullptr;
 }
 
-MyVector<bool>::Reference MyVector<bool>::operator[](size_t index)
+Vector<bool>::Reference Vector<bool>::operator[](size_t index)
 {
-    return MyVector::Reference(m_ptr, index);
+    return Vector::Reference(m_ptr, index);
 }
 
-MyVector<bool>::Reference::Reference(uint8_t* ptr1, size_t index1) : 
+Vector<bool>::Reference::Reference(uint8_t* ptr1, size_t index1) : 
 	ptr(ptr1), index(index1)
 {
 	flag = (ptr[index / BYTE] >> (index % BYTE)) & 1;
 }
 
-MyVector<bool>::Reference::Reference(const Reference& obj)
+Vector<bool>::Reference::Reference(const Reference& obj)
 {
 	index = obj.index;
 	ptr = obj.ptr;
 	flag = obj.flag;
 }
 
-MyVector<bool>::Reference::Reference(Reference&& obj)
+Vector<bool>::Reference::Reference(Reference&& obj)
 {
 	index = obj.index;
 	ptr = obj.ptr;
@@ -748,7 +787,7 @@ MyVector<bool>::Reference::Reference(Reference&& obj)
 	obj.flag = 0;
 }
 
-MyVector<bool>::Reference& MyVector<bool>::Reference::operator=(const Reference& obj)
+Vector<bool>::Reference& Vector<bool>::Reference::operator=(const Reference& obj)
 {
 	if (flag != obj.flag)
 	{
@@ -758,7 +797,7 @@ MyVector<bool>::Reference& MyVector<bool>::Reference::operator=(const Reference&
 	return *this;
 }
 
-MyVector<bool>::Reference& MyVector<bool>::Reference::operator=(bool flag)
+Vector<bool>::Reference& Vector<bool>::Reference::operator=(bool flag)
 {
 	if (this->flag != flag)
 	{
@@ -768,17 +807,17 @@ MyVector<bool>::Reference& MyVector<bool>::Reference::operator=(bool flag)
 	return *this;
 }
 
-MyVector<bool>::Reference::operator bool() const
+Vector<bool>::Reference::operator bool() const
 {
 	return flag;
 }
 
-uint8_t* MyVector<bool>::data() const
+uint8_t* Vector<bool>::data() const
 {
     return m_ptr;
 }
 
-void MyVector<bool>::reserve(size_t new_capacity)
+void Vector<bool>::reserve(size_t new_capacity)
 {
     if (new_capacity > m_max_size)
     {
@@ -810,7 +849,7 @@ void MyVector<bool>::reserve(size_t new_capacity)
     }
 }
 
-void MyVector<bool>::resize(size_t new_size)
+void Vector<bool>::resize(size_t new_size)
 {
     if (new_size > m_max_size)
     {
@@ -845,7 +884,7 @@ void MyVector<bool>::resize(size_t new_size)
     }
 }
 
-void MyVector<bool>::shrink_to_fit()
+void Vector<bool>::shrink_to_fit()
 {
     size_t wanted_size = m_size / BYTE + static_cast<bool>(m_size % BYTE); 
     if (wanted_size < m_capacity)
@@ -863,7 +902,7 @@ void MyVector<bool>::shrink_to_fit()
     }
 }
 
-void MyVector<bool>::push_back(bool val)
+void Vector<bool>::push_back(bool val)
 {
     if (m_size > m_max_size - 10)
     {
@@ -881,7 +920,7 @@ void MyVector<bool>::push_back(bool val)
     ++m_size;
 }
 
-void MyVector<bool>::pop_back()
+void Vector<bool>::pop_back()
 {
     if (m_size == 0)
     {
@@ -892,29 +931,29 @@ void MyVector<bool>::pop_back()
     --m_size;
 }
 
-void MyVector<bool>::swap(MyVector<bool>& other)
+void Vector<bool>::swap(Vector<bool>& other)
 {
     std::swap(m_size, other.m_size);
     std::swap(m_capacity, other.m_capacity);
     std::swap(m_ptr, other.m_ptr);
 }
 
-size_t MyVector<bool>::size() const
+size_t Vector<bool>::size() const
 {
     return m_size;
 }
 
-size_t MyVector<bool>::capacity() const
+size_t Vector<bool>::capacity() const
 {
     return m_capacity;
 }
 
-const size_t MyVector<bool>::max_size() const
+const size_t Vector<bool>::max_size() const
 {
     return m_max_size;
 }
 
-void MyVector<bool>::clear()
+void Vector<bool>::clear()
 {
 	int size = m_size / BYTE + static_cast<bool>(m_size % BYTE);
 	for (int i = 0; i < size; ++i)
@@ -924,7 +963,7 @@ void MyVector<bool>::clear()
     m_size = 0;
 }
 
-bool MyVector<bool>::empty() const
+bool Vector<bool>::empty() const
 {
     return m_size == 0;
 }

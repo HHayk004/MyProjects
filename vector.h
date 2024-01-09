@@ -6,41 +6,43 @@
 	#include <limits>
 
     template <typename T>
-    class MyVector 
+    class Vector 
     {
-        private:
-            T* m_ptr;
+        private: // private members of our vector
+            T* m_ptr; 
             size_t m_size;
-		    const size_t m_max_size = std::numeric_limits<size_t>::max() / sizeof(T);
+		    const size_t m_max_size = std::numeric_limits<size_t>::max() / sizeof(T); // max_size of size
             size_t m_capacity;
         
         public:
-		    MyVector();
-		    MyVector(size_t);
-		    MyVector(std::initializer_list<T>);
-		    MyVector(const MyVector&) noexcept;
-            MyVector(MyVector&&);
-		    ~MyVector();
+		    Vector(); // 5 constructors of vector
+		    Vector(size_t, T);
+		    Vector(std::initializer_list<T>);
+		    Vector(const Vector&) noexcept;
+            Vector(Vector&&);
+
+		    ~Vector(); // destructor
  
-			class Iterator {
+			class Iterator { // iterator subclass
 				private:
-					T* ptr;
+					T* ptr; // iterator is represented as pointer
 				
 				public:
-					Iterator();
+					Iterator(); // 2 constructors
 					Iterator(T*);
 				
-					Iterator& operator=(const Iterator&);
-					Iterator operator++();
-					Iterator operator++(int);
+					Iterator& operator=(const Iterator&); // operators as in random access iterator
+					Iterator operator++(); // ++it
+					Iterator operator++(int); // it++
 					Iterator operator+(size_t);
 					Iterator operator+=(size_t);
 					Iterator operator-(size_t);
+                    size_t operator-(Iterator);
 					Iterator operator-=(size_t);
-					Iterator operator--();
-					Iterator operator--(int);
+					Iterator operator--(); // --it
+					Iterator operator--(int); // it--
 
-					T& operator[](int) const;
+					T& operator[](int) const; 
 					T& operator*() const;
 					T* operator->() const;
 					
@@ -54,49 +56,50 @@
 					bool operator!=(const Iterator&) const;
 			};
 
-			Iterator begin() const;
+			Iterator begin() const; // 2 functions that return iterator 
 			Iterator end() const;
 
             T& operator[](const size_t) const;
 
-            MyVector& operator=(std::initializer_list<T>);
-            MyVector& operator=(const MyVector&);
-            MyVector& operator=(MyVector&&);
+            Vector& operator=(std::initializer_list<T>); // assignment operator 3 overloadings
+            Vector& operator=(const Vector&); 
+            Vector& operator=(Vector&&);
 
-            std::ostream& operator<<(std::ostream&) const;
+            std::ostream& operator<<(std::ostream&) const; // for printint whole vector by << operator
 
-            T* data() const;
-            T at(size_t) const;
+            T* data() const; // return m_ptr value
+            T at(size_t) const; // same as subsctipt operator
     
-            T& back() const;
-            T& front() const;
+            T& back() const; // reference to first element in vector
+            T& front() const; // reference to last element in vector
 
-            void shrink_to_fit();
+            void shrink_to_fit(); // if capacity > size, copying to smaller memory, then capacity = size
         
-            void reserve(size_t);
-            void resize(size_t);
-            bool empty() const;        
+            void reserve(size_t); // for increasing of capacity
+            void resize(size_t); // changing the size;
+            bool empty() const; // checks if vector is empty
         
-            void push_back(T);
-            void push_front(T);
-            void pop_back();
-            void pop_front();
+            void push_back(T); // adding element from back
+            void push_front(T); // adding element from front
+            void pop_back(); // deleting element from back
+            void pop_front(); // deleting element from front
         
-            void insert(size_t, T);
-            void erase(size_t);
-            void erase(size_t, size_t);
+            void insert(Iterator it, T); // for element insert;
+            void insert(Iterator, std::initializer_list<T>);
+            void erase(Iterator);
+            void erase(Iterator, Iterator);
 
-            void swap(MyVector&);
+            void swap(Vector&); // swaping 2 vectors
 
-            size_t size() const;
-            const size_t max_size() const;
-            size_t capacity() const;
+            size_t size() const; // returns m_size value
+            const size_t max_size() const; // returns m_max_size value
+            size_t capacity() const; // returns m_capacity value
 
-            void clear();
+            void clear(); // clearing the whole vector
     };
 
     template <>
-    class MyVector<bool>
+    class Vector<bool>
     {
         private:
             size_t m_size;
@@ -105,12 +108,12 @@
             uint8_t* m_ptr;
 
         public:
-            MyVector();
-		    MyVector(bool);
-		    MyVector(std::initializer_list<bool>);
-		    MyVector(const MyVector<bool>&) noexcept;
-            MyVector(MyVector<bool>&&);
-		    ~MyVector();
+            Vector();
+		    Vector(bool);
+		    Vector(std::initializer_list<bool>);
+		    Vector(const Vector<bool>&) noexcept;
+            Vector(Vector<bool>&&);
+		    ~Vector();
             
             class Reference {
                 private:
@@ -130,9 +133,9 @@
             Reference operator[](size_t index);
             std::ostream& operator<<(std::ostream&) const;
 
-            MyVector& operator=(std::initializer_list<bool>);
-            MyVector& operator=(const MyVector&);
-            MyVector& operator=(MyVector&&); 
+            Vector& operator=(std::initializer_list<bool>);
+            Vector& operator=(const Vector&);
+            Vector& operator=(Vector&&); 
 
             uint8_t* data() const;
             bool at(size_t) const;
@@ -146,7 +149,7 @@
             void push_back(bool);
             void pop_back();
         
-            void swap(MyVector<bool>&);
+            void swap(Vector<bool>&);
 
             size_t size() const;
             const size_t max_size() const;
