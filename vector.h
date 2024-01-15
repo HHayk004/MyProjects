@@ -3,6 +3,7 @@
 
     #include <iostream>
 	#include <initializer_list>
+    #include <utility>
 	#include <limits>
 
     template <typename T>
@@ -19,11 +20,11 @@
 		    Vector(size_t, T);
 		    Vector(std::initializer_list<T>);
 		    Vector(const Vector&) noexcept;
-            Vector(Vector&&);
+            Vector(Vector&&) noexcept;
 
 		    ~Vector(); // destructor
  
-			class Iterator { // iterator subclass
+			class Iterator { // random access iterator subclass
 				private:
 					T* ptr; // iterator is represented as pointer
 				
@@ -32,14 +33,14 @@
 					Iterator(T*);
 				
 					Iterator& operator=(const Iterator&); // operators as in random access iterator
-					Iterator operator++(); // ++it
+					Iterator& operator++(); // ++it
 					Iterator operator++(int); // it++
 					Iterator operator+(size_t);
 					Iterator operator+=(size_t);
 					Iterator operator-(size_t);
                     size_t operator-(Iterator);
 					Iterator operator-=(size_t);
-					Iterator operator--(); // --it
+					Iterator& operator--(); // --it
 					Iterator operator--(int); // it--
 
 					T& operator[](int) const; 
@@ -68,7 +69,7 @@
             std::ostream& operator<<(std::ostream&) const; // for printint whole vector by << operator
 
             T* data() const; // return m_ptr value
-            T at(size_t) const; // same as subsctipt operator
+            T& at(size_t) const; // same as subsctipt operator
     
             T& back() const; // reference to first element in vector
             T& front() const; // reference to last element in vector
@@ -109,10 +110,10 @@
 
         public:
             Vector();
-		    Vector(bool);
+		    Vector(size_t, bool);
 		    Vector(std::initializer_list<bool>);
 		    Vector(const Vector<bool>&) noexcept;
-            Vector(Vector<bool>&&);
+            Vector(Vector<bool>&&) noexcept;
 		    ~Vector();
             
             class Reference {
@@ -123,9 +124,10 @@
                 
                 public:
                     Reference(uint8_t*, size_t);
-					Reference(const Reference&);
-					Reference(Reference&&);                   
-					operator bool() const; 
+					Reference(const Reference&) noexcept;
+					Reference(Reference&&) noexcept;
+
+					operator bool() const;
                     Reference& operator=(const Reference& obj);
                     Reference& operator=(bool flag);
             };  
@@ -134,8 +136,8 @@
             std::ostream& operator<<(std::ostream&) const;
 
             Vector& operator=(std::initializer_list<bool>);
-            Vector& operator=(const Vector&);
-            Vector& operator=(Vector&&); 
+            Vector& operator=(const Vector&) noexcept;
+            Vector& operator=(Vector&&) noexcept; 
 
             uint8_t* data() const;
             bool at(size_t) const;

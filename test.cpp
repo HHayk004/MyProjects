@@ -3,16 +3,11 @@
 
 int main()
 {
-    Vector<int> vec = {1, 2, 3, 4, 5, 6};
-    Vector<int>::Iterator it = vec.begin() + 2;
+    Vector<bool> vec(5, 1);
 
-    vec.erase(it, it + 2);
+    vec.push_back(0);
 
-	for (auto it = vec.begin(); it != vec.end(); ++it)
-	{
-		std::cout << *it << ' ';
-	}
-    std::cout << std::endl;
+    std::cout << vec << std::endl;
 
     return 0;
 }
